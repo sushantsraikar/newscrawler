@@ -19,6 +19,12 @@ class ToiSpider(scrapy.Spider):
     def parse(self, response):
         links = []
         for href in response.xpath('//@href').extract():
-            links.append(href)
+            #if base url there in href
+            if response.url in href:
+                if href.split('?')[0] not in links:
+                    links.append(href)
+                    yield scrapy.Request(href, callback=self.parse_callback)
+
+
         with open('links','w') as f:
             f.write("\n".join(links))
