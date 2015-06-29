@@ -12,6 +12,11 @@ class ToiSpider(scrapy.Spider):
         ]
     links = []
     
+    def __init__(self, *args, **kwargs):
+        super(ToiSpider, self).__init__(*args, **kwargs) 
+        links = [kwargs.get('start_url')]
+        if links[0] :
+            self.start_urls = links  
     
     outdir = '' 
     #typical url 'http://timesofindia.indiatimes.com/tech/tech-news/title/articleshow/47827034.cms'
@@ -32,7 +37,10 @@ class ToiSpider(scrapy.Spider):
             with open(filename, 'w') as f:
                 f.write(title +"\n\n"+ image+"\n\n"+content)
             payload = {'category':'tech','title':title,'content':content,'url':image}
-            requests.post('http://172.16.30.30:3000/news/create',data=payload)
+            try:
+                requests.post('http://172.16.30.30:3000/news/create',data=payload)
+            except:
+                print 'Server not live'
 
     def parse(self, response):
         self.outdir = 'crawled/' + response.url.split("/")[-1]
