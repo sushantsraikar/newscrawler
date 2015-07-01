@@ -34,15 +34,16 @@ class ToiSpider(scrapy.Spider):
             logging.warning("\n\n---------->"+filename)
             try:
                 title =  response.xpath('//span[@class = "arttle"]/h1/text()').extract()[0]
+                time =  response.xpath('//text()[contains(.,"IST")]').extract()[0].strip()
                 image = response.xpath('//div[@class = "mainimg1"]//img/@src').extract()[0]
                 content = "<br>".join(response.xpath('//div[@class = "Normal"]/text()').extract()) 
             except:
                 return
             with open(filename, 'w') as f:
-                f.write(title +"\n\n"+ image+"\n\n"+content)
-            payload = {'category':self.cat,'title':title,'content':content,'url':image}
+                f.write(title+"\n\n"+time+"\n\n"+ image+"\n\n"+content)
+            payload = {'category':self.cat,'title':title,'content':content,'url':image,'time':time}
             try:
-                requests.post('http://10.1.22.44:3000/news/create',data=payload)
+                requests.post('http://localhost:3000/news/create',data=payload)
             except:
                 print 'Server not live'
 
